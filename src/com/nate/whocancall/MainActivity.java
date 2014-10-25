@@ -1,9 +1,8 @@
-package com.nate.whoiscall;
+package com.nate.whocancall;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
 
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -21,7 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nate.whoiscall.UIHandler;
+import com.nate.whocancall.UIHandler;
+import com.nate.whoiscall.R;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -231,9 +231,9 @@ public class MainActivity extends Activity  {
 		if(bIsShow){
 			setTextOnScreen(UIHandler.Number_List, jsonNumberArray.toString() );
 			if(whiteNumbers != "")
-				Toast.makeText(this, "您的來電白名單:\n" + whiteNumbers, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "嚙緲嚙踝蕭嚙諉電嚙調名嚙踝蕭:\n" + whiteNumbers, Toast.LENGTH_LONG).show();
 			else
-				Toast.makeText(this, "沒有任何來電白名單", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "嚙磅嚙踝蕭嚙踝蕭嚙踝蕭蚢q嚙調名嚙踝蕭", Toast.LENGTH_LONG).show();
 		}
 		return jsonNumberArray.toString();
 	}

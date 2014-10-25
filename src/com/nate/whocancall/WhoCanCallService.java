@@ -1,8 +1,8 @@
-package com.nate.whoiscall;
+package com.nate.whocancall;
 
 import org.json.JSONArray;
 
-import com.nate.whoiscall.UIHandler;
+import com.nate.whocancall.UIHandler;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

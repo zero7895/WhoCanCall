@@ -1,4 +1,4 @@
-package com.nate.whoiscall;
+package com.nate.whocancall;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
