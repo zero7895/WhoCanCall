@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">WhoCanCall</string>
+    <string name="menu_settings">Settings</string>
+    
+    <string name="hello_world">Hello world!</string>
+    <string name="On_Off">On/Off</string>
+	<string name="Default_String_EditText">請輸入連絡人電話或名稱</string>
+</resources>

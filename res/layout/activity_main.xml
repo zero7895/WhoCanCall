@@ -1,0 +1,85 @@
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:weightSum="100"
+    android:orientation="vertical">
+    
+    <TextView
+        android:id="@+id/textview"
+    	android:gravity="center"
+    	android:textColor="@android:color/black"
+    	android:textSize="18sp"
+    	android:layout_width="fill_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="0"
+        android:text="@string/hello_world"
+    />
+    
+    <LinearLayout 
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="10"
+    	android:weightSum="30">
+
+
+    	<TextView
+    	    android:id="@+id/textviewStatus"
+    		android:gravity="center"
+    		android:textColor="#000000"
+    		android:textSize="18sp"
+        	android:layout_width="0dp"
+        	android:layout_height="fill_parent"
+        	android:layout_weight="30"   
+        	android:text="@string/hello_world"
+    	    >
+    	    
+    	</TextView>  
+    </LinearLayout >
+    
+    <EditText
+    	android:id="@+id/numberEdit"    	
+        android:layout_width="fill_parent"   
+        android:layout_height="0dp"
+        android:layout_weight="10"    	 
+    	android:hint="@string/Default_String_EditText"/>
+
+    <ListView
+    	android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="70"
+        android:id="@+id/listview1"
+        >
+    </ListView>
+    
+    <LinearLayout 
+    	android:orientation="horizontal"
+    	android:layout_width="fill_parent"
+    	android:layout_height="0dp"
+    	android:layout_weight="10">
+        
+        <Button
+        	android:id="@+id/btnUsable"
+        	android:layout_width="0dp"
+        	android:layout_height="fill_parent"
+        	android:layout_weight="1"       
+        	android:text="@string/On_Off" />
+            	
+     	<Button
+        	android:id="@+id/btnGetNum"
+        	android:layout_width="0dp"
+        	android:layout_height="fill_parent"
+        	android:layout_weight="1" 
+        	android:text="Get" />
+     
+     	<Button
+	        android:id="@+id/btnClearNum"
+    	    android:layout_width="0dp"
+        	android:layout_height="fill_parent"
+        	android:layout_weight="1" 
+        	android:text="Clear" />
+     </LinearLayout >
+    
+</LinearLayout >
+
