@@ -4,6 +4,16 @@
     <string name="menu_settings">Settings</string>
     
     <string name="hello_world">Hello world!</string>
-    <string name="On_Off">On/Off</string>
+    <string name="On_Off">開/關</string>
+    <string name="GetWhiteList">白名單</string>
+    <string name="DeleteWhiteList">清除白名單</string>
 	<string name="Default_String_EditText">請輸入連絡人電話或名稱</string>
+	<string name="PhoneCallVibrate">來電震動震動</string>
+	<string name="On">啟用中</string>
+	<string name="Off">已停止</string>
+	
+	<string name="Already_Add">已加入白名單</string>
+	<string name="Already_In_List">已存在白名單中</string>
+	<string name="YourWhiteList">您的來電白名單</string>
+	<string name="NoAnyWhiteList">尚未設定來電白名單</string>
 </resources>

@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +34,8 @@ public class MainActivity extends Activity  {
 	private UIHandler mUIHandler;
 	private boolean bIsStatus = false;
 	final String BOOT_COMPLETED_ACTION = "android.intent.action.BOOT_COMPLETED";
+	private static final String TAG = MainActivity.class.getName();
+	private static final String White_Number_File = "White_Number_File";
 	
 	EditText mEditText;
 	TextView mTextView;
@@ -44,7 +47,7 @@ public class MainActivity extends Activity  {
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);        
         
-        System.out.println("[MainActivity][onCreate] enter");
+        Log.i(TAG, "[onCreate] enter");	
         setContentView(R.layout.activity_main);                   
         mEditText = (EditText)findViewById(R.id.numberEdit);
         mTextView = (TextView)findViewById(R.id.textview);  
@@ -76,8 +79,8 @@ public class MainActivity extends Activity  {
 
         }).start();
 	}
-	private void addListenerOnButton() {   	
-    
+	
+	private void addListenerOnButton() {   	    
     	//On Off btn
     	Button btnUsable = (Button) findViewById(R.id.btnUsable); 
     	btnUsable.setOnClickListener(new OnClickListener() { 
@@ -98,8 +101,22 @@ public class MainActivity extends Activity  {
        	Button btnGetNum = (Button) findViewById(R.id.btnGetNum); 
        	btnGetNum.setOnClickListener(new OnClickListener() { 
 			public void onClick(View arg0) {  
-				String strWhiteNumbers = getPhoneNumberList(true);				
-				System.out.println("[MainActivity] btnGetNum onClick");				
+				String strWhiteNumbers = getPhoneNumberList(true);
+				try {
+					JSONArray whiteNumberJSONArr = new JSONArray(strWhiteNumbers);
+					ArrayList<String> whiteNumberArr = new ArrayList<String>();     					
+					if (whiteNumberJSONArr != null) { 
+						int len = whiteNumberJSONArr.length();
+						for (int i=0;i<len;i++){ 
+							whiteNumberArr.add(whiteNumberJSONArr.get(i).toString());
+						} 
+					} 
+					showWhiteNumberOnListView(whiteNumberArr);					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Log.i(TAG, "btnGetNum onClick");			
 			} 
 		});  
        	
@@ -107,8 +124,10 @@ public class MainActivity extends Activity  {
        	Button btnClearNum = (Button) findViewById(R.id.btnClearNum); 
        	btnClearNum.setOnClickListener(new OnClickListener() { 
 			public void onClick(View arg0) {  
-				SetPhoneNumberList("clear");
-				System.out.println("[MainActivity] btnClearNum onClick");				
+				AddPhoneNumberList("clear");
+				ArrayList<String> emptyArr = new ArrayList<String>(); 
+				showWhiteNumberOnListView(emptyArr);
+				Log.i(TAG, "btnClearNum onClick");				
 			} 
 		});  
     	
@@ -136,7 +155,7 @@ public class MainActivity extends Activity  {
 	
 	public void setTextOnScreen(String type, String value)
 	{
-		System.out.println("[MainActivity] [sendMessageToUI] enter, type:" + type + " , value:" + value);		
+		Log.i(TAG, "[setTextOnScreen] enter, type:" + type + " , value:" + value);		
 		
 		if(type == UIHandler.Call_Info)
 			mTextView.setText("tel:" + value);
@@ -149,7 +168,7 @@ public class MainActivity extends Activity  {
 	}
     
     public void setSharedData(String type, String value) {
-    	System.out.println("[MainActivity][setSharedData] type:" + type + ", value:" + value);
+    	Log.i(TAG, "[setSharedData]  type:" + type + ", value:" + value);	
         SharedPreferences settings = getSharedPreferences ("Nate_Info_File", 0);
         SharedPreferences.Editor PE = settings.edit();
         PE.putString(type, value);
@@ -157,7 +176,7 @@ public class MainActivity extends Activity  {
     }
         
     public String getSharedData(String type) {
-    	System.out.println("[MainActivity][getSharedData] type:" + type);
+    	Log.i(TAG, "[setSharedData]  type:" + type);	
         SharedPreferences settings = getSharedPreferences ("Nate_Info_File", 0);
         return settings.getString(type, "null");       
     }
@@ -167,23 +186,56 @@ public class MainActivity extends Activity  {
 		if(strStatus.equalsIgnoreCase("YES")){
 			setTextOnScreen(UIHandler.Status_Info, "bIsStatus = true");
 			mTextViewStatus.setBackgroundColor(android.graphics.Color.GREEN);
-			mTextViewStatus.setText("Status: On");
+			mTextViewStatus.setText( getString(R.string.PhoneCallVibrate) + " " + getString(R.string.On));
 			return true;
 		}
 		else{ 
 			setTextOnScreen(UIHandler.Status_Info, "bIsStatus = false");
 			mTextViewStatus.setBackgroundColor(android.graphics.Color.RED);
-			mTextViewStatus.setText("Status: Off");
+			mTextViewStatus.setText( getString(R.string.PhoneCallVibrate) + " " +getString(R.string.Off));
 			return false;
 		}
 		
 	}
 	
 	
-	public void SetPhoneNumberList(String number) {
-		System.out.println("[MainActivity][SetPhoneNumberList] add number:" + number);
+	public void DeletePhoneNumberList(String number) {
+		Log.i(TAG, "[DeletePhoneNumberList] delete number:" + number);	
 
-		SharedPreferences settings = this.getSharedPreferences("Nate_Number_File", 0);
+		SharedPreferences settings = this.getSharedPreferences(White_Number_File, 0);
+		JSONArray jsonArray = null;
+		JSONArray newJsonArray = null;
+		try {
+			//get existed list 
+			jsonArray = new JSONArray(getPhoneNumberList(false)); 		
+			//remove number in jsonArray
+			
+			//Remove the element from arraylist
+			ArrayList<String> list = JsonArrayToListArray(jsonArray);
+			for(int i=0; i < list.size(); i++){
+				if(list.get(i).equals(number)){
+					list.remove(i);
+					break;
+				}
+			}
+			//Recreate JSON Array
+			newJsonArray = new JSONArray(list);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+					
+		SharedPreferences.Editor PE = settings.edit();
+		PE.putString("NumberList", newJsonArray.toString());
+		PE.commit();
+		
+		Log.i(TAG, "newJsonArray.toString():" + newJsonArray.toString());
+	}
+	
+	public void AddPhoneNumberList(String number) {
+		Log.i(TAG, "[SetPhoneNumberList] add number:" + number);	
+
+		SharedPreferences settings = this.getSharedPreferences(White_Number_File, 0);
 		JSONArray jsonArray = null;
 		if(number == "clear")
 		{
@@ -194,32 +246,38 @@ public class MainActivity extends Activity  {
 			try {
 				//get existed list 
 				jsonArray = new JSONArray(getPhoneNumberList(false)); 
+				if (checkInWhiteList(jsonArray, number)){
+					Toast.makeText(this, number + getString(R.string.Already_In_List) , Toast.LENGTH_SHORT).show();
+					return;
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			jsonArray.put(number);
+			Toast.makeText(this, number + getString(R.string.Already_Add) , Toast.LENGTH_SHORT).show();
 		}		
 		
 		SharedPreferences.Editor PE = settings.edit();
 		PE.putString("NumberList", jsonArray.toString());
 		PE.commit();
-		System.out.println(jsonArray.toString());
+		
+		Log.i(TAG, "jsonArray.toString():" + jsonArray.toString());		
 	}
 
 	public String getPhoneNumberList(boolean bIsShow) {
-		System.out.println("[MainActivity][getPhoneNumberList] enter");
+		Log.i(TAG, "[MainActivity][getPhoneNumberList] enter");
 
-		SharedPreferences settings = this.getSharedPreferences("Nate_Number_File", 0);
+		SharedPreferences settings = this.getSharedPreferences(White_Number_File, 0);
 		String str = settings.getString("NumberList", "NoString");
-		System.out.println("[MainActivity][getPhoneNumberList] str:" + str);
+		Log.i(TAG, "[MainActivity][getPhoneNumberList] str:" + str);
 		
 		String whiteNumbers = "";
 		JSONArray jsonNumberArray = null;
 		try {
 			jsonNumberArray = new JSONArray(settings.getString("NumberList", "[]"));		   
 		    for (int i = 0; i < jsonNumberArray.length(); i++) {
-		    	System.out.println("your number list " + i + ":"+ jsonNumberArray.getString(i));
+		    	Log.i(TAG, "white list " + i + ":"+ jsonNumberArray.getString(i));
 		    	whiteNumbers += jsonNumberArray.getString(i);
 		    	if(i != jsonNumberArray.length()-1)
 		    		whiteNumbers +="\n";
@@ -231,9 +289,9 @@ public class MainActivity extends Activity  {
 		if(bIsShow){
 			setTextOnScreen(UIHandler.Number_List, jsonNumberArray.toString() );
 			if(whiteNumbers != "")
-				Toast.makeText(this, "�z���ӹq�զW��:\n" + whiteNumbers, Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.YourWhiteList) + "\n" +  whiteNumbers, Toast.LENGTH_SHORT).show();
 			else
-				Toast.makeText(this, "�S������ӹq�զW��", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.NoAnyWhiteList) , Toast.LENGTH_SHORT).show();
 		}
 		return jsonNumberArray.toString();
 	}
@@ -255,14 +313,12 @@ public class MainActivity extends Activity  {
         	 	        	String phoneNumber = pCur.getString( pCur.getColumnIndex(android.provider.ContactsContract.CommonDataKinds.Phone.NUMBER));  
         	 	        	//Log.v(ContactTag, "id:" + id + " name:" + name +" phone:" + phoneNumber+"!");
         	 	        	if(phoneNumber != null){
-        	 	        		Log.v(ContactTag, "name:" + name +" phone:" + phoneNumber + "!!!!!!!!!!!!!!!!!!!!!");
+        	 	        		Log.v(ContactTag, "name:" + name +" phone:" + phoneNumber);
         	 	        		arrListContactAll.add(name + ":" + phoneNumber);
         	 	        	}
         	 		    // Do something with phones
         	 	        } 
-        	 	        pCur.close();
-        				
-        	 	    
+        	 	        pCur.close();        	 	    
         		}
             }
         }
@@ -292,18 +348,69 @@ public class MainActivity extends Activity  {
     		}
         }
         
-		//TestListView
+		//Number ListView
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, targetArrayList);
         listView.setAdapter(adapter);
         
         listView.setOnItemClickListener(new OnItemClickListener(){
         	public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-        		//mTextView.setText(targetArrayList.get(position));
         		String target = targetArrayList.get(position);
-        		SetPhoneNumberList(target);	
-        		Toast.makeText(view.getContext(), target + " added", Toast.LENGTH_LONG).show();
+        		AddPhoneNumberList(target);	        		
 			}        	
         });
+	}
+	
+	public void showWhiteNumberOnListView(final ArrayList<String> targetArrayList) {
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, targetArrayList);
+        listView.setAdapter(adapter);
+        
+        listView.setOnItemLongClickListener(new OnItemLongClickListener(){        	
+
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {	
+        		String target = targetArrayList.get(position);
+        		DeletePhoneNumberList(target);	
+        		targetArrayList.remove(position);
+        		//Toast.makeText(view.getContext(), target + getString(R.string.Already_Add) , Toast.LENGTH_SHORT).show();
+        		
+        		runOnUiThread(new Runnable() {
+                    public void run() {
+                    	adapter.notifyDataSetChanged();
+                    }});
+        		
+				return false;
+			}        	
+        });
+	}
+	
+	public ArrayList<String> JsonArrayToListArray(JSONArray jsonArray) {
+		ArrayList<String> list = new ArrayList<String>();    			
+		int len = jsonArray.length();
+		if (jsonArray != null) { 
+		   for (int i=0;i<len;i++){ 
+		    try {
+				list.add(jsonArray.get(i).toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		   } 
+		}
+		return list;
+	}
+	
+	public boolean checkInWhiteList(JSONArray jsonArr, String number){		
+		for(int i=0; i < jsonArr.length(); i++){
+			try {
+				if(jsonArr.get(i).equals(number)){
+					return true;
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 }
 

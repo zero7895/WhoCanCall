@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.nate.whoiscall.MainActivity"
+            android:name="com.nate.whocancall.MainActivity"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -28,14 +28,14 @@
             </intent-filter>
         </activity>
         
-        <service android:name="com.nate.whoiscall.WhoCanCallService">
+        <service android:name="com.nate.whocancall.WhoCanCallService">
             <intent-filter>
                 <action android:name="com.nate.whoiscall.WhoCanCallService"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>   
         </service>          		
         
-        <receiver android:name="com.nate.whoiscall.BootBroadcastReceiver">
+        <receiver android:name="com.nate.whocancall.BootBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>

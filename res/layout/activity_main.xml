@@ -71,14 +71,14 @@
         	android:layout_width="0dp"
         	android:layout_height="fill_parent"
         	android:layout_weight="1" 
-        	android:text="Get" />
+        	android:text="@string/GetWhiteList"  />
      
      	<Button
 	        android:id="@+id/btnClearNum"
     	    android:layout_width="0dp"
         	android:layout_height="fill_parent"
         	android:layout_weight="1" 
-        	android:text="Clear" />
+        	android:text="@string/DeleteWhiteList" />
      </LinearLayout >
     
 </LinearLayout >
